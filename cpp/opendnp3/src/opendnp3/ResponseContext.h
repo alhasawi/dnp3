@@ -97,7 +97,7 @@ public:
 		return mMode;
 	}
 
-	IEventBuffer* GetBuffer() {
+	SlaveEventBuffer* GetBuffer() {
 		return &mBuffer;
 	}
 

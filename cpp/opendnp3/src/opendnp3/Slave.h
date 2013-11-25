@@ -183,9 +183,8 @@ private:
 	void OnDataUpdate();					// internal event dispatched when user code commits an update to mChangeBuffer
 	void OnUnsolTimerExpiration();			// internal event dispatched when the unsolicted pack/retry timer expires
 
-	void ConfigureAndSendSimpleResponse();
-	void Send(APDU&);
-	void Send(APDU& arAPDU, const IINField& arIIN); // overload with additional IIN data
+	void ConfigureAndSendSimpleResponse();	
+	void Send(APDU& arAPDU, const IINField& arIIN = IINField());
 	void SendUnsolicited(APDU& arAPDU);
 
 	void HandleWrite(const APDU& arRequest);

@@ -251,13 +251,11 @@ void Slave::Send(APDU& arAPDU, const IINField& arIIN)
 {
 	mRspIIN.BitwiseOR(mIIN);
 	mRspIIN.BitwiseOR(arIIN);
-	arAPDU.SetIIN(mRspIIN);
-	mpAppLayer->SendResponse(arAPDU);
-}
 
-void Slave::Send(APDU& arAPDU)
-{
-	mRspIIN.BitwiseOR(mIIN);
+	if(this->mRspContext.GetBuffer()->HasClassData(PC_CLASS_1)) mRspIIN.SetClass1Events(true);
+	if(this->mRspContext.GetBuffer()->HasClassData(PC_CLASS_2)) mRspIIN.SetClass2Events(true);
+	if(this->mRspContext.GetBuffer()->HasClassData(PC_CLASS_3)) mRspIIN.SetClass3Events(true);
+
 	arAPDU.SetIIN(mRspIIN);
 	mpAppLayer->SendResponse(arAPDU);
 }

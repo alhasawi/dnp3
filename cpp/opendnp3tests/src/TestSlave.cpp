@@ -262,6 +262,47 @@ BOOST_AUTO_TEST_CASE(BlankIntegrityPoll)
 	BOOST_REQUIRE_EQUAL(t.Read(), "C0 81 80 00");
 }
 
+/*
+     IIN_LSB_CLASS1_EVENTS = 0x02,
+     IIN_LSB_CLASS2_EVENTS = 0x04,
+     IIN_LSB_CLASS3_EVENTS = 0x08,
+*/
+
+void TestClassIINBit(PointClass clazz, std::string response)
+{
+	SlaveConfig cfg; cfg.mDisableUnsol = true;
+	SlaveTestObject t(cfg);
+	
+	t.db.Configure(DT_BINARY, 1);
+	t.db.SetClass(DT_BINARY, clazz);
+	
+	t.slave.OnLowerLayerUp();
+
+	{
+		Transaction tr(&t.db);
+		t.db.Update(Binary(true, BQ_ONLINE), 0);
+	}
+
+	t.SendToSlave("C0 01 3C 01 06"); // Read class 0
+	BOOST_REQUIRE_EQUAL(t.Read(), response);  // static binary data with Class IIN bit set
+}
+
+BOOST_AUTO_TEST_CASE(OutstationSetsEventIINBitClass1)
+{
+	TestClassIINBit(PC_CLASS_1, "C0 81 82 00 01 02 00 00 00 81");
+}
+
+BOOST_AUTO_TEST_CASE(OutstationSetsEventIINBitClass2)
+{
+	TestClassIINBit(PC_CLASS_2, "C0 81 84 00 01 02 00 00 00 81");
+}
+
+BOOST_AUTO_TEST_CASE(OutstationSetsEventIINBitClass3)
+{
+	TestClassIINBit(PC_CLASS_3, "C0 81 88 00 01 02 00 00 00 81");
+}
+
+
 BOOST_AUTO_TEST_CASE(BlankExceptionScan)
 {
 	SlaveConfig cfg; cfg.mDisableUnsol = true;
@@ -848,7 +889,7 @@ BOOST_AUTO_TEST_CASE(UnsolEnable)
 	BOOST_REQUIRE_EQUAL(t.app.NumAPDU(), 0); //check that no unsol packets are generated
 
 	t.SendToSlave("C0 14 3C 02 06");
-	BOOST_REQUIRE_EQUAL(t.Read(), "C0 81 80 00");
+	BOOST_REQUIRE_EQUAL(t.Read(), "C0 81 82 00");
 
 	// should automatically send the previous data as unsol
 	BOOST_REQUIRE_EQUAL(t.Read(), "F0 82 80 00 02 01 17 01 00 01");

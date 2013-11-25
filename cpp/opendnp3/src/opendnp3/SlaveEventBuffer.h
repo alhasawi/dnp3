@@ -191,6 +191,7 @@ public:
 	 */
 	bool HasEventData();
 
+
 	/**
 	 * Selects data in the buffer that matches the given PointClass, up to
 	 * the defined number of entries.  The selection behavior is
